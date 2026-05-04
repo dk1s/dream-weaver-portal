@@ -11,6 +11,7 @@ import Wallet from "./pages/Wallet.tsx";
 import CreateTeam from "./pages/CreateTeam.tsx";
 import Bet from "./pages/Bet.tsx";
 import LiveScore from "./pages/LiveScore.tsx";
+import ContestSelect from "./pages/ContestSelect.tsx";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +29,7 @@ const App = () => (
           <Route path="/create-team" element={<CreateTeam />} />
           <Route path="/bet" element={<Bet />} />
           <Route path="/live" element={<LiveScore />} />
+          <Route path="/contests" element={<ContestSelect />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

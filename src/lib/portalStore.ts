@@ -16,6 +16,7 @@ export type JoinedContest = {
 export type UserTeam = {
   id: string;
   name: string;
+  matchId: string;
   match: string;
   captain: string;
   viceCaptain: string;
