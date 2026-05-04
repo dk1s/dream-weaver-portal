@@ -23,34 +23,35 @@ export type CricketMatch = {
   players: Player[];
 };
 
-const buildPool = (a: string, b: string): Player[] => [
-  // Team A
-  { id: `${a}-wk1`, name: "J. Buttler", team: a, role: "WK", credit: 10 },
-  { id: `${a}-wk2`, name: "S. Billings", team: a, role: "WK", credit: 8 },
-  { id: `${a}-bat1`, name: "K. Williams", team: a, role: "BAT", credit: 11 },
-  { id: `${a}-bat2`, name: "D. Malan", team: a, role: "BAT", credit: 9.5 },
-  { id: `${a}-bat3`, name: "P. Salt", team: a, role: "BAT", credit: 9 },
-  { id: `${a}-ar1`, name: "B. Stokes", team: a, role: "AR", credit: 10.5 },
-  { id: `${a}-ar2`, name: "M. Ali", team: a, role: "AR", credit: 8.5 },
-  { id: `${a}-ar3`, name: "L. Livingstone", team: a, role: "AR", credit: 9 },
-  { id: `${a}-bowl1`, name: "A. Khan", team: a, role: "BOWL", credit: 9 },
-  { id: `${a}-bowl2`, name: "T. Boult", team: a, role: "BOWL", credit: 9.5 },
-  { id: `${a}-bowl3`, name: "S. Curran", team: a, role: "BOWL", credit: 8 },
-  { id: `${a}-bowl4`, name: "M. Wood", team: a, role: "BOWL", credit: 8.5 },
-  // Team B
-  { id: `${b}-wk1`, name: "M. Rizwan", team: b, role: "WK", credit: 10 },
-  { id: `${b}-wk2`, name: "S. Khan", team: b, role: "WK", credit: 8 },
-  { id: `${b}-bat1`, name: "B. Azam", team: b, role: "BAT", credit: 11 },
-  { id: `${b}-bat2`, name: "F. Zaman", team: b, role: "BAT", credit: 9.5 },
-  { id: `${b}-bat3`, name: "S. Masood", team: b, role: "BAT", credit: 9 },
-  { id: `${b}-ar1`, name: "I. Wasim", team: b, role: "AR", credit: 8.5 },
-  { id: `${b}-ar2`, name: "S. Aslam", team: b, role: "AR", credit: 8 },
-  { id: `${b}-ar3`, name: "A. Ali", team: b, role: "AR", credit: 8.5 },
-  { id: `${b}-bowl1`, name: "S. Afridi", team: b, role: "BOWL", credit: 9.5 },
-  { id: `${b}-bowl2`, name: "H. Ali", team: b, role: "BOWL", credit: 9 },
-  { id: `${b}-bowl3`, name: "N. Shah", team: b, role: "BOWL", credit: 8.5 },
-  { id: `${b}-bowl4`, name: "M. Wasim", team: b, role: "BOWL", credit: 8 },
+// 11-player lineup per team: 1 WK, 4 BAT, 2 AR, 4 BOWL
+const LINEUP_A = [
+  { role: "WK" as Role, names: ["J. Buttler"] },
+  { role: "BAT" as Role, names: ["K. Williams", "D. Malan", "P. Salt", "J. Root"] },
+  { role: "AR" as Role, names: ["B. Stokes", "M. Ali"] },
+  { role: "BOWL" as Role, names: ["A. Khan", "T. Boult", "S. Curran", "M. Wood"] },
 ];
+
+const LINEUP_B = [
+  { role: "WK" as Role, names: ["M. Rizwan"] },
+  { role: "BAT" as Role, names: ["B. Azam", "F. Zaman", "S. Masood", "I. Khan"] },
+  { role: "AR" as Role, names: ["I. Wasim", "S. Aslam"] },
+  { role: "BOWL" as Role, names: ["S. Afridi", "H. Ali", "N. Shah", "M. Wasim"] },
+];
+
+const buildPool = (a: string, b: string): Player[] => {
+  const out: Player[] = [];
+  LINEUP_A.forEach((g) =>
+    g.names.forEach((n, i) =>
+      out.push({ id: `${a}-${g.role}-${i}`, name: n, team: a, role: g.role, credit: 9 })
+    )
+  );
+  LINEUP_B.forEach((g) =>
+    g.names.forEach((n, i) =>
+      out.push({ id: `${b}-${g.role}-${i}`, name: n, team: b, role: g.role, credit: 9 })
+    )
+  );
+  return out;
+};
 
 export const matches: CricketMatch[] = [
   { id: "val-irn", league: "T20 World Cup", status: "LIVE", detail: "Q3 • 14.2 OV", teamA: "VAL", teamAName: "Valkyries", teamB: "IRN", teamBName: "Ironclads", prize: "$5M", players: buildPool("VAL", "IRN") },

@@ -1,13 +1,12 @@
 import Navbar from "@/components/portal/Navbar";
 import Footer from "@/components/portal/Footer";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { portalStore, usePortal } from "@/lib/portalStore";
 import { toast } from "sonner";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { Star, Crown } from "lucide-react";
 import { getMatch, Role } from "@/lib/matchData";
 
-const CAP = 100;
 const MAX = 11;
 
 const ROLE_META: { key: Role; label: string; min: number; max: number }[] = [
@@ -30,10 +29,6 @@ const CreateTeam = () => {
   const [name, setName] = useState("");
   const [activeTeam, setActiveTeam] = useState<string>(match.teamA);
 
-  const used = useMemo(
-    () => POOL.filter((p) => selected.includes(p.id)).reduce((s, p) => s + p.credit, 0),
-    [selected, POOL]
-  );
 
   const countByRole = (r: Role) =>
     selected.filter((id) => POOL.find((p) => p.id === id)?.role === r).length;
@@ -49,10 +44,8 @@ const CreateTeam = () => {
     }
     if (selected.length >= MAX) return toast.error("Max 11 players");
     const p = POOL.find((x) => x.id === id)!;
-    if (used + p.credit > CAP) return toast.error("Not enough credits");
     const roleMax = ROLE_META.find((r) => r.key === p.role)!.max;
     if (countByRole(p.role) >= roleMax) return toast.error(`Max ${roleMax} ${p.role}`);
-    if (countByTeam(p.team) >= 7) return toast.error("Max 7 from one side");
     setSelected([...selected, id]);
   };
 
@@ -92,14 +85,10 @@ const CreateTeam = () => {
 
         <div className="grid lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 bg-panel border border-border-dim p-6">
-            <div className="grid grid-cols-3 mb-6 text-center border border-border-dim">
+            <div className="grid grid-cols-2 mb-6 text-center border border-border-dim">
               <div className="p-3 border-r border-border-dim">
                 <div className="text-[10px] uppercase text-muted-foreground tracking-widest">Players</div>
                 <div className="font-display text-3xl">{selected.length}/11</div>
-              </div>
-              <div className="p-3 border-r border-border-dim">
-                <div className="text-[10px] uppercase text-muted-foreground tracking-widest">Credits left</div>
-                <div className="font-display text-3xl text-accent">{(CAP - used).toFixed(1)}</div>
               </div>
               <div className="p-3">
                 <div className="text-[10px] uppercase text-muted-foreground tracking-widest">{match.teamA} / {match.teamB}</div>
