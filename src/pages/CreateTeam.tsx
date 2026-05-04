@@ -7,7 +7,6 @@ import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { Star, Crown } from "lucide-react";
 import { getMatch, Role } from "@/lib/matchData";
 
-const CAP = 100;
 const MAX = 11;
 
 const ROLE_META: { key: Role; label: string; min: number; max: number }[] = [
@@ -49,10 +48,8 @@ const CreateTeam = () => {
     }
     if (selected.length >= MAX) return toast.error("Max 11 players");
     const p = POOL.find((x) => x.id === id)!;
-    if (used + p.credit > CAP) return toast.error("Not enough credits");
     const roleMax = ROLE_META.find((r) => r.key === p.role)!.max;
     if (countByRole(p.role) >= roleMax) return toast.error(`Max ${roleMax} ${p.role}`);
-    if (countByTeam(p.team) >= 7) return toast.error("Max 7 from one side");
     setSelected([...selected, id]);
   };
 
