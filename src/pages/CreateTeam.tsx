@@ -89,14 +89,10 @@ const CreateTeam = () => {
 
         <div className="grid lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 bg-panel border border-border-dim p-6">
-            <div className="grid grid-cols-3 mb-6 text-center border border-border-dim">
+            <div className="grid grid-cols-2 mb-6 text-center border border-border-dim">
               <div className="p-3 border-r border-border-dim">
                 <div className="text-[10px] uppercase text-muted-foreground tracking-widest">Players</div>
                 <div className="font-display text-3xl">{selected.length}/11</div>
-              </div>
-              <div className="p-3 border-r border-border-dim">
-                <div className="text-[10px] uppercase text-muted-foreground tracking-widest">Credits left</div>
-                <div className="font-display text-3xl text-accent">{(CAP - used).toFixed(1)}</div>
               </div>
               <div className="p-3">
                 <div className="text-[10px] uppercase text-muted-foreground tracking-widest">{match.teamA} / {match.teamB}</div>
