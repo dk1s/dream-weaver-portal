@@ -29,10 +29,6 @@ const CreateTeam = () => {
   const [name, setName] = useState("");
   const [activeTeam, setActiveTeam] = useState<string>(match.teamA);
 
-  const used = useMemo(
-    () => POOL.filter((p) => selected.includes(p.id)).reduce((s, p) => s + p.credit, 0),
-    [selected, POOL]
-  );
 
   const countByRole = (r: Role) =>
     selected.filter((id) => POOL.find((p) => p.id === id)?.role === r).length;
