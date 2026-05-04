@@ -1,6 +1,6 @@
 import Navbar from "@/components/portal/Navbar";
 import Footer from "@/components/portal/Footer";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { portalStore, usePortal } from "@/lib/portalStore";
 import { toast } from "sonner";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
