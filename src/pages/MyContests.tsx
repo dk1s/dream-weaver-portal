@@ -30,7 +30,7 @@ const MyContests = () => {
             {contests.map((c) => {
               const top10 = (c.rank / c.totalPlayers) * 100 <= 10;
               return (
-                <div key={c.id} className="bg-panel border border-border-dim p-6 grid md:grid-cols-5 gap-6 items-center">
+                <Link to={`/contest/${c.id}`} key={c.id} className="block bg-panel border border-border-dim hover:border-accent transition-colors p-6 grid md:grid-cols-5 gap-6 items-center">
                   <div className="md:col-span-2">
                     <div className="text-[10px] uppercase tracking-widest text-muted-foreground">{c.match}</div>
                     <div className="font-display text-3xl mt-1">{c.contestName}</div>
@@ -55,15 +55,15 @@ const MyContests = () => {
                     <div className="font-display text-4xl text-primary tabular-nums">{c.prize}</div>
                     <div className="text-xs text-muted-foreground">Entry ${c.entry}</div>
                   </div>
-                </div>
+                </Link>
               );
             })}
           </div>
         )}
       </main>
       <Footer />
-                </Link>
-              );
+    </div>
+  );
 };
 
 export default MyContests;
