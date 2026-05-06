@@ -227,8 +227,9 @@ const ContestDetail = () => {
                     {r.trend === "flat" && <Minus className="w-3 h-3 text-muted-foreground" />}
                     {r.points.toFixed(1)}
                   </div>
-                </div>
-              ))}
+                </button>
+                );
+              })}
             </div>
           </div>
 
