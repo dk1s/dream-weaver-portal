@@ -128,7 +128,7 @@ const ContestDetail = () => {
           </div>
           <div className="grid md:grid-cols-3 gap-6 items-end">
             <div>
-              <div className="text-[10px] uppercase tracking-widest text-muted-foreground">2nd Innings</div>
+              <div className="text-[10px] uppercase tracking-widest text-muted-foreground">2nd Innings • {battingTeam}</div>
               <div className="font-display text-6xl md:text-7xl tabular-nums leading-none mt-2">
                 {score.runs}<span className="text-muted-foreground text-3xl">/{score.wickets}</span>
               </div>
@@ -146,6 +146,40 @@ const ContestDetail = () => {
               <div className="border border-border-dim p-3">
                 <div className="text-[10px] uppercase text-muted-foreground tracking-widest">Balls Left</div>
                 <div className="font-display text-3xl">{Math.max(0, (20 - score.overs) * 6).toFixed(0)}</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Batting / Bowling */}
+          <div className="grid md:grid-cols-2 gap-3 mt-6 border-t border-border-dim pt-5">
+            <div>
+              <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-accent mb-2">
+                <Target className="w-3 h-3" /> Batting • {battingTeam}
+              </div>
+              <div className="space-y-1 text-sm">
+                <div className="flex justify-between border-b border-border-dim pb-1">
+                  <span className="font-bold">{striker} <span className="text-accent">*</span></span>
+                  <span className="tabular-nums text-muted-foreground">42 (28)</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>{nonStriker}</span>
+                  <span className="tabular-nums text-muted-foreground">31 (24)</span>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-primary mb-2">
+                <CircleDot className="w-3 h-3" /> Bowling • {bowlingTeam}
+              </div>
+              <div className="space-y-1 text-sm">
+                <div className="flex justify-between border-b border-border-dim pb-1">
+                  <span className="font-bold">{bowler} <span className="text-primary">●</span></span>
+                  <span className="tabular-nums text-muted-foreground">3-0-22-1</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Last over</span>
+                  <span className="tabular-nums text-muted-foreground">1 4 . W 2 1</span>
+                </div>
               </div>
             </div>
           </div>
