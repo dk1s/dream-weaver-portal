@@ -202,11 +202,15 @@ const ContestDetail = () => {
                 <div className="col-span-3">Team</div>
                 <div className="col-span-2 text-right">Points</div>
               </div>
-              {rows.map((r) => (
-                <div
+              {rows.map((r) => {
+                const isCompare = compareId === r.rank;
+                return (
+                <button
+                  type="button"
                   key={`${r.rank}-${r.user}`}
-                  className={`grid grid-cols-12 gap-2 px-5 py-3 items-center text-sm ${
-                    r.isMe ? "bg-accent/10 border-l-4 border-accent" : ""
+                  onClick={() => !r.isMe && setCompareId(isCompare ? null : r.rank)}
+                  className={`w-full text-left grid grid-cols-12 gap-2 px-5 py-3 items-center text-sm transition-colors ${
+                    r.isMe ? "bg-accent/10 border-l-4 border-accent" : isCompare ? "bg-primary/10 border-l-4 border-primary" : "hover:bg-surface"
                   }`}
                 >
                   <div className="col-span-2 font-display text-xl tabular-nums flex items-center gap-2">
