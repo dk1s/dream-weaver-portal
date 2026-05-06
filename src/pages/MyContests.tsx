@@ -62,8 +62,8 @@ const MyContests = () => {
         )}
       </main>
       <Footer />
-    </div>
-  );
+                </Link>
+              );
 };
 
 export default MyContests;
