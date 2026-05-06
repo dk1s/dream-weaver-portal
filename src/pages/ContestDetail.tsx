@@ -3,7 +3,7 @@ import Footer from "@/components/portal/Footer";
 import { useParams, Link } from "react-router-dom";
 import { usePortal } from "@/lib/portalStore";
 import { useEffect, useMemo, useState } from "react";
-import { Crown, TrendingUp, TrendingDown, Minus, ArrowLeft } from "lucide-react";
+import { Crown, TrendingUp, TrendingDown, Minus, ArrowLeft, Target, CircleDot } from "lucide-react";
 
 type Row = {
   rank: number;
@@ -27,6 +27,15 @@ const ContestDetail = () => {
   const contest = contests.find((c) => c.id === id);
 
   const [score, setScore] = useState({ runs: 142, wickets: 4, overs: 14.2, target: 178 });
+  const [compareId, setCompareId] = useState<number | null>(null);
+
+  // Derive batting/bowling team names from contest.match e.g. "VAL vs IRN"
+  const [teamA, teamB] = (contest?.match ?? "TEAM A vs TEAM B").split(" vs ");
+  const battingTeam = teamB; // 2nd innings = chasing team
+  const bowlingTeam = teamA;
+  const striker = ["R. Sharma", "V. Kohli", "S. Gill", "K. Rahul", "S. Iyer"][Math.floor(score.overs) % 5];
+  const nonStriker = ["H. Pandya", "R. Pant", "S. Yadav", "J. Bumrah"][Math.floor(score.overs) % 4];
+  const bowler = ["J. Archer", "T. Boult", "R. Jadeja", "M. Wood", "A. Khan"][Math.floor(score.overs) % 5];
 
   useEffect(() => {
     const t = setInterval(() => {
