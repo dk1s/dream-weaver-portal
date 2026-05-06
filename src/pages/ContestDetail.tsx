@@ -248,7 +248,10 @@ const ContestDetail = () => {
             </div>
 
             <div className="bg-panel border border-border-dim p-5">
-              <h3 className="font-display text-2xl uppercase mb-3">Compare</h3>
+              <h3 className="font-display text-2xl uppercase mb-1">Compare</h3>
+              <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-3">
+                Tap any leaderboard row to compare
+              </p>
               <div className="border border-border-dim p-3 mb-3">
                 <div className="text-[10px] uppercase tracking-widest text-muted-foreground">You</div>
                 <div className="flex justify-between items-end">
@@ -257,18 +260,35 @@ const ContestDetail = () => {
                 </div>
                 <div className="text-xs text-muted-foreground">Rank #{contest.rank}</div>
               </div>
-              {above && (
-                <div className="border border-border-dim p-3 mb-3">
-                  <div className="text-[10px] uppercase tracking-widest text-accent">Above You</div>
-                  <div className="flex justify-between items-end">
-                    <div className="font-bold">{above.user}</div>
-                    <div className="font-display text-2xl tabular-nums">{above.points.toFixed(1)}</div>
+              {(() => {
+                const target = compareId ? rows.find((r) => r.rank === compareId) : (above ?? leader);
+                if (!target) return null;
+                const diff = target.points - contest.points;
+                const ahead = diff > 0;
+                return (
+                  <div className="border border-primary/40 p-3 mb-3 bg-primary/5">
+                    <div className="text-[10px] uppercase tracking-widest text-primary flex items-center justify-between">
+                      <span>{compareId ? "Selected" : (above ? "Above You" : "Leader")}</span>
+                      {compareId && (
+                        <button onClick={() => setCompareId(null)} className="text-muted-foreground hover:text-foreground">×</button>
+                      )}
+                    </div>
+                    <div className="flex justify-between items-end">
+                      <div className="font-bold flex items-center gap-1">
+                        {target.rank === 1 && <Crown className="w-3 h-3 text-accent" />}
+                        {target.user}
+                      </div>
+                      <div className="font-display text-2xl tabular-nums">{target.points.toFixed(1)}</div>
+                    </div>
+                    <div className="text-xs text-muted-foreground">Rank #{target.rank} • Team {target.team}</div>
+                    <div className={`text-xs mt-1 ${ahead ? "text-primary" : "text-accent"}`}>
+                      {ahead ? `+${diff.toFixed(1)} pts to overtake` : `You lead by ${Math.abs(diff).toFixed(1)} pts`}
+                    </div>
                   </div>
-                  <div className="text-xs text-primary">+{(above.points - contest.points).toFixed(1)} pts to overtake</div>
-                </div>
-              )}
+                );
+              })()}
               <div className="border border-border-dim p-3">
-                <div className="text-[10px] uppercase tracking-widest text-primary">Leader</div>
+                <div className="text-[10px] uppercase tracking-widest text-accent">Leader</div>
                 <div className="flex justify-between items-end">
                   <div className="font-bold flex items-center gap-1"><Crown className="w-3 h-3 text-accent" />{leader.user}</div>
                   <div className="font-display text-2xl tabular-nums">{leader.points.toFixed(1)}</div>
