@@ -3,7 +3,7 @@ import Footer from "@/components/portal/Footer";
 import { useParams, Link } from "react-router-dom";
 import { usePortal } from "@/lib/portalStore";
 import { useEffect, useMemo, useState } from "react";
-import { Crown, TrendingUp, TrendingDown, Minus, ArrowLeft } from "lucide-react";
+import { Crown, TrendingUp, TrendingDown, Minus, ArrowLeft, Target, CircleDot } from "lucide-react";
 
 type Row = {
   rank: number;
@@ -27,6 +27,15 @@ const ContestDetail = () => {
   const contest = contests.find((c) => c.id === id);
 
   const [score, setScore] = useState({ runs: 142, wickets: 4, overs: 14.2, target: 178 });
+  const [compareId, setCompareId] = useState<number | null>(null);
+
+  // Derive batting/bowling team names from contest.match e.g. "VAL vs IRN"
+  const [teamA, teamB] = (contest?.match ?? "TEAM A vs TEAM B").split(" vs ");
+  const battingTeam = teamB; // 2nd innings = chasing team
+  const bowlingTeam = teamA;
+  const striker = ["R. Sharma", "V. Kohli", "S. Gill", "K. Rahul", "S. Iyer"][Math.floor(score.overs) % 5];
+  const nonStriker = ["H. Pandya", "R. Pant", "S. Yadav", "J. Bumrah"][Math.floor(score.overs) % 4];
+  const bowler = ["J. Archer", "T. Boult", "R. Jadeja", "M. Wood", "A. Khan"][Math.floor(score.overs) % 5];
 
   useEffect(() => {
     const t = setInterval(() => {
@@ -119,7 +128,7 @@ const ContestDetail = () => {
           </div>
           <div className="grid md:grid-cols-3 gap-6 items-end">
             <div>
-              <div className="text-[10px] uppercase tracking-widest text-muted-foreground">2nd Innings</div>
+              <div className="text-[10px] uppercase tracking-widest text-muted-foreground">2nd Innings • {battingTeam}</div>
               <div className="font-display text-6xl md:text-7xl tabular-nums leading-none mt-2">
                 {score.runs}<span className="text-muted-foreground text-3xl">/{score.wickets}</span>
               </div>
@@ -137,6 +146,40 @@ const ContestDetail = () => {
               <div className="border border-border-dim p-3">
                 <div className="text-[10px] uppercase text-muted-foreground tracking-widest">Balls Left</div>
                 <div className="font-display text-3xl">{Math.max(0, (20 - score.overs) * 6).toFixed(0)}</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Batting / Bowling */}
+          <div className="grid md:grid-cols-2 gap-3 mt-6 border-t border-border-dim pt-5">
+            <div>
+              <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-accent mb-2">
+                <Target className="w-3 h-3" /> Batting • {battingTeam}
+              </div>
+              <div className="space-y-1 text-sm">
+                <div className="flex justify-between border-b border-border-dim pb-1">
+                  <span className="font-bold">{striker} <span className="text-accent">*</span></span>
+                  <span className="tabular-nums text-muted-foreground">42 (28)</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>{nonStriker}</span>
+                  <span className="tabular-nums text-muted-foreground">31 (24)</span>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-primary mb-2">
+                <CircleDot className="w-3 h-3" /> Bowling • {bowlingTeam}
+              </div>
+              <div className="space-y-1 text-sm">
+                <div className="flex justify-between border-b border-border-dim pb-1">
+                  <span className="font-bold">{bowler} <span className="text-primary">●</span></span>
+                  <span className="tabular-nums text-muted-foreground">3-0-22-1</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Last over</span>
+                  <span className="tabular-nums text-muted-foreground">1 4 . W 2 1</span>
+                </div>
               </div>
             </div>
           </div>
@@ -159,11 +202,15 @@ const ContestDetail = () => {
                 <div className="col-span-3">Team</div>
                 <div className="col-span-2 text-right">Points</div>
               </div>
-              {rows.map((r) => (
-                <div
+              {rows.map((r) => {
+                const isCompare = compareId === r.rank;
+                return (
+                <button
+                  type="button"
                   key={`${r.rank}-${r.user}`}
-                  className={`grid grid-cols-12 gap-2 px-5 py-3 items-center text-sm ${
-                    r.isMe ? "bg-accent/10 border-l-4 border-accent" : ""
+                  onClick={() => !r.isMe && setCompareId(isCompare ? null : r.rank)}
+                  className={`w-full text-left grid grid-cols-12 gap-2 px-5 py-3 items-center text-sm transition-colors ${
+                    r.isMe ? "bg-accent/10 border-l-4 border-accent" : isCompare ? "bg-primary/10 border-l-4 border-primary" : "hover:bg-surface"
                   }`}
                 >
                   <div className="col-span-2 font-display text-xl tabular-nums flex items-center gap-2">
@@ -180,8 +227,9 @@ const ContestDetail = () => {
                     {r.trend === "flat" && <Minus className="w-3 h-3 text-muted-foreground" />}
                     {r.points.toFixed(1)}
                   </div>
-                </div>
-              ))}
+                </button>
+                );
+              })}
             </div>
           </div>
 
@@ -200,7 +248,10 @@ const ContestDetail = () => {
             </div>
 
             <div className="bg-panel border border-border-dim p-5">
-              <h3 className="font-display text-2xl uppercase mb-3">Compare</h3>
+              <h3 className="font-display text-2xl uppercase mb-1">Compare</h3>
+              <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-3">
+                Tap any leaderboard row to compare
+              </p>
               <div className="border border-border-dim p-3 mb-3">
                 <div className="text-[10px] uppercase tracking-widest text-muted-foreground">You</div>
                 <div className="flex justify-between items-end">
@@ -209,18 +260,35 @@ const ContestDetail = () => {
                 </div>
                 <div className="text-xs text-muted-foreground">Rank #{contest.rank}</div>
               </div>
-              {above && (
-                <div className="border border-border-dim p-3 mb-3">
-                  <div className="text-[10px] uppercase tracking-widest text-accent">Above You</div>
-                  <div className="flex justify-between items-end">
-                    <div className="font-bold">{above.user}</div>
-                    <div className="font-display text-2xl tabular-nums">{above.points.toFixed(1)}</div>
+              {(() => {
+                const target = compareId ? rows.find((r) => r.rank === compareId) : (above ?? leader);
+                if (!target) return null;
+                const diff = target.points - contest.points;
+                const ahead = diff > 0;
+                return (
+                  <div className="border border-primary/40 p-3 mb-3 bg-primary/5">
+                    <div className="text-[10px] uppercase tracking-widest text-primary flex items-center justify-between">
+                      <span>{compareId ? "Selected" : (above ? "Above You" : "Leader")}</span>
+                      {compareId && (
+                        <button onClick={() => setCompareId(null)} className="text-muted-foreground hover:text-foreground">×</button>
+                      )}
+                    </div>
+                    <div className="flex justify-between items-end">
+                      <div className="font-bold flex items-center gap-1">
+                        {target.rank === 1 && <Crown className="w-3 h-3 text-accent" />}
+                        {target.user}
+                      </div>
+                      <div className="font-display text-2xl tabular-nums">{target.points.toFixed(1)}</div>
+                    </div>
+                    <div className="text-xs text-muted-foreground">Rank #{target.rank} • Team {target.team}</div>
+                    <div className={`text-xs mt-1 ${ahead ? "text-primary" : "text-accent"}`}>
+                      {ahead ? `+${diff.toFixed(1)} pts to overtake` : `You lead by ${Math.abs(diff).toFixed(1)} pts`}
+                    </div>
                   </div>
-                  <div className="text-xs text-primary">+{(above.points - contest.points).toFixed(1)} pts to overtake</div>
-                </div>
-              )}
+                );
+              })()}
               <div className="border border-border-dim p-3">
-                <div className="text-[10px] uppercase tracking-widest text-primary">Leader</div>
+                <div className="text-[10px] uppercase tracking-widest text-accent">Leader</div>
                 <div className="flex justify-between items-end">
                   <div className="font-bold flex items-center gap-1"><Crown className="w-3 h-3 text-accent" />{leader.user}</div>
                   <div className="font-display text-2xl tabular-nums">{leader.points.toFixed(1)}</div>
