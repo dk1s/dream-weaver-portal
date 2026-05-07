@@ -5,7 +5,7 @@ import { portalStore, usePortal } from "@/lib/portalStore";
 import { toast } from "sonner";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { Star, Crown } from "lucide-react";
-import { getMatch, Role } from "@/lib/matchData";
+import { getMatch, matchContests, Role } from "@/lib/matchData";
 
 const MAX = 11;
 
@@ -20,6 +20,8 @@ const CreateTeam = () => {
   const nav = useNavigate();
   const [params] = useSearchParams();
   const match = getMatch(params.get("match"));
+  const contestKey = params.get("contest");
+  const contest = matchContests(match.id).find((c) => c.key === contestKey) ?? null;
   const POOL = match.players;
 
   const { teams } = usePortal();
@@ -64,8 +66,27 @@ const CreateTeam = () => {
       viceCaptain: POOL.find((p) => p.id === vc)!.name,
       players: selected.map((id) => POOL.find((p) => p.id === id)!.name),
     });
-    toast.success("Team saved! Now pick a contest.");
-    nav(`/contests?match=${match.id}`);
+
+    if (contest) {
+      const ok = portalStore.joinContest({
+        match: `${match.teamA} vs ${match.teamB}`,
+        contestName: contest.name,
+        entry: contest.entry,
+        prize: contest.prize,
+        totalPlayers: contest.totalPlayers,
+        teamName: name,
+      });
+      if (!ok) {
+        toast.error("Team saved, but insufficient balance to join.");
+        nav(`/contests?match=${match.id}`);
+        return;
+      }
+      toast.success(`Joined ${contest.name} with ${name}!`);
+      nav(`/contests-hub`);
+    } else {
+      toast.success("Team saved! Now pick a contest.");
+      nav(`/contests?match=${match.id}`);
+    }
   };
 
   const visiblePlayers = POOL.filter((p) => p.team === activeTeam);
@@ -186,7 +207,7 @@ const CreateTeam = () => {
                 <div>• Max 7 players from one side</div>
               </div>
               <button onClick={save} className="w-full bg-primary text-primary-foreground font-bold uppercase tracking-wider py-4">
-                Save & Pick Contest
+                {contest ? `Save & Join ${contest.name} ($${contest.entry})` : "Save & Pick Contest"}
               </button>
             </div>
 
