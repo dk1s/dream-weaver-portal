@@ -10,8 +10,7 @@ const Navbar = () => {
   const nav = useNavigate();
 
   const links = [
-    { label: "Contests", to: "/contests-hub" },
-    { label: "My Contests", to: "/my-contests" },
+    { label: "Matches", to: "/contests-hub" },
     { label: "Bet on Match", to: "/bet" },
   ];
 

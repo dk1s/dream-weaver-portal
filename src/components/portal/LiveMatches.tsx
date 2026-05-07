@@ -38,7 +38,7 @@ const LiveMatches = () => {
           {matches.map((m) => (
             <button
               key={m.id}
-              onClick={() => nav(`/create-team?match=${m.id}`)}
+              onClick={() => nav(`/contests?match=${m.id}`)}
               className="text-left bg-panel border border-border-dim p-5 hover:border-primary/50 transition-all group flex flex-col"
             >
               <div className="flex justify-between items-center mb-6">
@@ -59,7 +59,7 @@ const LiveMatches = () => {
                   <div className="font-display text-xl text-accent tabular-nums leading-none mt-1">{m.prize}</div>
                 </div>
                 <span className="bg-primary text-primary-foreground text-xs font-bold uppercase tracking-wider px-4 py-2 group-hover:shadow-fire transition-all">
-                  Create Team →
+                  View Contests →
                 </span>
               </div>
             </button>
