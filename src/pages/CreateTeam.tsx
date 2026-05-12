@@ -60,9 +60,9 @@ const CreateTeam = () => {
       if (countByRole(r.key) < r.min) return toast.error(`Need at least ${r.min} ${r.label}`);
     }
     if (!captain || !vc) return toast.error("Choose captain & vice-captain");
-    if (!name.trim()) return toast.error("Name your team");
+
     portalStore.addTeam({
-      name,
+      name: autoName,
       matchId: match.id,
       match: `${match.teamA} vs ${match.teamB}`,
       captain: POOL.find((p) => p.id === captain)!.name,
@@ -71,21 +71,21 @@ const CreateTeam = () => {
     });
 
     if (contest) {
-      const ok = portalStore.joinContest({
+      const newId = portalStore.joinContest({
         match: `${match.teamA} vs ${match.teamB}`,
         contestName: contest.name,
         entry: contest.entry,
         prize: contest.prize,
         totalPlayers: contest.totalPlayers,
-        teamName: name,
+        teamName: autoName,
       });
-      if (!ok) {
+      if (!newId) {
         toast.error("Team saved, but insufficient balance to join.");
-        nav(`/contests?match=${match.id}`);
+        nav(`/wallet`);
         return;
       }
-      toast.success(`Joined ${contest.name} with ${name}!`);
-      nav(`/contests-hub`);
+      toast.success(`Joined ${contest.name}!`);
+      nav(`/contest/${newId}`);
     } else {
       toast.success("Team saved! Now pick a contest.");
       nav(`/contests?match=${match.id}`);
