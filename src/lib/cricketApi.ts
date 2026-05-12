@@ -1,4 +1,9 @@
-import { supabase } from "@/integrations/supabase/client";
+// Direct CricAPI client. The CricAPI free key is treated as a publishable key
+// (rate-limited per project) since cricketdata.org's servers reject Supabase
+// edge IPs. CORS is enabled (`*`) so calling directly from the browser is fine.
+
+const API_KEY = "e3a3523d-e59d-43c5-b352-aa163067b7fb";
+const BASE = "https://api.cricapi.com/v1";
 
 export type ApiMatch = {
   id: string;
@@ -15,20 +20,16 @@ export type ApiMatch = {
   matchEnded: boolean;
 };
 
-const call = async <T>(action: string, id?: string): Promise<T> => {
-  const params = new URLSearchParams({ action });
-  if (id) params.set("id", id);
-  const { data, error } = await supabase.functions.invoke(
-    `cricket-scores?${params.toString()}`,
-    { method: "GET" },
-  );
-  if (error) throw error;
-  if (data?.status && data.status !== "success") {
-    throw new Error(data.reason || data.status);
+const get = async <T>(endpoint: string, extra: Record<string, string> = {}): Promise<T> => {
+  const params = new URLSearchParams({ apikey: API_KEY, offset: "0", ...extra });
+  const r = await fetch(`${BASE}${endpoint}?${params.toString()}`);
+  const json = await r.json();
+  if (json.status && json.status !== "success") {
+    throw new Error(json.reason || json.status);
   }
-  return data?.data as T;
+  return json.data as T;
 };
 
-export const fetchCurrentMatches = () => call<ApiMatch[]>("currentMatches");
-export const fetchMatches = () => call<ApiMatch[]>("matches");
-export const fetchMatchInfo = (id: string) => call<ApiMatch>("match_info", id);
+export const fetchCurrentMatches = () => get<ApiMatch[]>("/currentMatches");
+export const fetchMatches = () => get<ApiMatch[]>("/matches");
+export const fetchMatchInfo = (id: string) => get<ApiMatch>("/match_info", { id });
