@@ -197,20 +197,21 @@ const CreateTeam = () => {
 
           <div className="space-y-4 h-fit lg:sticky lg:top-24">
             <div className="bg-panel border border-border-dim p-6">
-              <h3 className="font-display text-3xl uppercase mb-4">Save Team</h3>
-              <input
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Team name"
-                className="w-full bg-background border border-border-dim px-3 py-3 focus:border-accent outline-none mb-4"
-              />
+              <h3 className="font-display text-3xl uppercase mb-2">Your Team ID</h3>
+              <div className="border border-border-dim bg-background px-3 py-3 mb-1">
+                <div className="text-[10px] uppercase text-muted-foreground tracking-widest">Auto-generated</div>
+                <div className="font-display text-xl truncate">{autoName}</div>
+              </div>
+              <div className="text-[10px] text-muted-foreground mb-4">
+                Linked to {profile.username} • no manual naming
+              </div>
               <div className="text-xs text-muted-foreground space-y-1 mb-4">
+                <div>• Pick exactly 11 players</div>
                 <div>• At least 1 from each role</div>
                 <div>• Captain earns 2x, V-Captain 1.5x</div>
-                <div>• Max 7 players from one side</div>
               </div>
               <button onClick={save} className="w-full bg-primary text-primary-foreground font-bold uppercase tracking-wider py-4">
-                {contest ? `Save & Join ${contest.name} ($${contest.entry})` : "Save & Pick Contest"}
+                {contest ? `Join ${contest.name} ($${contest.entry})` : "Save & Pick Contest"}
               </button>
             </div>
 
