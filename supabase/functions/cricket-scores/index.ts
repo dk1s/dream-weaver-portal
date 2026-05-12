@@ -1,5 +1,8 @@
 // Edge function: proxies CricAPI (cricketdata.org) to keep the API key server-side.
-import { corsHeaders } from "../_shared/cors.ts";
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
 
 const BASE = "https://api.cricapi.com/v1";
 
