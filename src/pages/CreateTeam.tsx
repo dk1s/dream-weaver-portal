@@ -24,13 +24,16 @@ const CreateTeam = () => {
   const contest = matchContests(match.id).find((c) => c.key === contestKey) ?? null;
   const POOL = match.players;
 
-  const { teams } = usePortal();
+  const { teams, profile } = usePortal();
   const [selected, setSelected] = useState<string[]>([]);
   const [captain, setCaptain] = useState<string | null>(null);
   const [vc, setVc] = useState<string | null>(null);
-  const [name, setName] = useState("");
   const [activeTeam, setActiveTeam] = useState<string>(match.teamA);
 
+  // Auto team identity (no manual name): user's first name + unique short ID
+  const teamMatchTeamsCount = teams.filter((t) => t.matchId === match.id).length;
+  const shortId = (profile.username.replace(/[@\s]/g, "").toUpperCase() || "USER").slice(0, 6);
+  const autoName = `${profile.name.split(" ")[0]} • ${shortId}-T${teamMatchTeamsCount + 1}`;
 
   const countByRole = (r: Role) =>
     selected.filter((id) => POOL.find((p) => p.id === id)?.role === r).length;
@@ -57,9 +60,9 @@ const CreateTeam = () => {
       if (countByRole(r.key) < r.min) return toast.error(`Need at least ${r.min} ${r.label}`);
     }
     if (!captain || !vc) return toast.error("Choose captain & vice-captain");
-    if (!name.trim()) return toast.error("Name your team");
+
     portalStore.addTeam({
-      name,
+      name: autoName,
       matchId: match.id,
       match: `${match.teamA} vs ${match.teamB}`,
       captain: POOL.find((p) => p.id === captain)!.name,
@@ -68,21 +71,21 @@ const CreateTeam = () => {
     });
 
     if (contest) {
-      const ok = portalStore.joinContest({
+      const newId = portalStore.joinContest({
         match: `${match.teamA} vs ${match.teamB}`,
         contestName: contest.name,
         entry: contest.entry,
         prize: contest.prize,
         totalPlayers: contest.totalPlayers,
-        teamName: name,
+        teamName: autoName,
       });
-      if (!ok) {
+      if (!newId) {
         toast.error("Team saved, but insufficient balance to join.");
-        nav(`/contests?match=${match.id}`);
+        nav(`/wallet`);
         return;
       }
-      toast.success(`Joined ${contest.name} with ${name}!`);
-      nav(`/contests-hub`);
+      toast.success(`Joined ${contest.name}!`);
+      nav(`/contest/${newId}`);
     } else {
       toast.success("Team saved! Now pick a contest.");
       nav(`/contests?match=${match.id}`);
@@ -194,20 +197,21 @@ const CreateTeam = () => {
 
           <div className="space-y-4 h-fit lg:sticky lg:top-24">
             <div className="bg-panel border border-border-dim p-6">
-              <h3 className="font-display text-3xl uppercase mb-4">Save Team</h3>
-              <input
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Team name"
-                className="w-full bg-background border border-border-dim px-3 py-3 focus:border-accent outline-none mb-4"
-              />
+              <h3 className="font-display text-3xl uppercase mb-2">Your Team ID</h3>
+              <div className="border border-border-dim bg-background px-3 py-3 mb-1">
+                <div className="text-[10px] uppercase text-muted-foreground tracking-widest">Auto-generated</div>
+                <div className="font-display text-xl truncate">{autoName}</div>
+              </div>
+              <div className="text-[10px] text-muted-foreground mb-4">
+                Linked to {profile.username} • no manual naming
+              </div>
               <div className="text-xs text-muted-foreground space-y-1 mb-4">
+                <div>• Pick exactly 11 players</div>
                 <div>• At least 1 from each role</div>
                 <div>• Captain earns 2x, V-Captain 1.5x</div>
-                <div>• Max 7 players from one side</div>
               </div>
               <button onClick={save} className="w-full bg-primary text-primary-foreground font-bold uppercase tracking-wider py-4">
-                {contest ? `Save & Join ${contest.name} ($${contest.entry})` : "Save & Pick Contest"}
+                {contest ? `Join ${contest.name} ($${contest.entry})` : "Save & Pick Contest"}
               </button>
             </div>
 

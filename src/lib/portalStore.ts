@@ -162,15 +162,16 @@ export const portalStore = {
     emit();
     return true;
   },
-  joinContest: (c: Omit<JoinedContest, "id" | "rank" | "points">) => {
-    if (c.entry > state.balance) return false;
+  joinContest: (c: Omit<JoinedContest, "id" | "rank" | "points">): string | null => {
+    if (c.entry > state.balance) return null;
+    const id = crypto.randomUUID();
     state = {
       ...state,
       balance: state.balance - c.entry,
       contests: [
         {
           ...c,
-          id: crypto.randomUUID(),
+          id,
           rank: Math.floor(Math.random() * c.totalPlayers) + 1,
           points: 0,
         },
@@ -179,7 +180,7 @@ export const portalStore = {
       txs: [{ id: crypto.randomUUID(), type: "entry", amount: -c.entry, note: c.contestName, createdAt: Date.now() }, ...state.txs],
     };
     emit();
-    return true;
+    return id;
   },
 };
 
