@@ -11,6 +11,7 @@ const Navbar = () => {
 
   const links = [
     { label: "Matches", to: "/contests-hub" },
+    { label: "Live Scores", to: "/live" },
     { label: "Bet on Match", to: "/bet" },
   ];
 
