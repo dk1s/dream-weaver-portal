@@ -24,13 +24,16 @@ const CreateTeam = () => {
   const contest = matchContests(match.id).find((c) => c.key === contestKey) ?? null;
   const POOL = match.players;
 
-  const { teams } = usePortal();
+  const { teams, profile } = usePortal();
   const [selected, setSelected] = useState<string[]>([]);
   const [captain, setCaptain] = useState<string | null>(null);
   const [vc, setVc] = useState<string | null>(null);
-  const [name, setName] = useState("");
   const [activeTeam, setActiveTeam] = useState<string>(match.teamA);
 
+  // Auto team identity (no manual name): user's first name + unique short ID
+  const teamMatchTeamsCount = teams.filter((t) => t.matchId === match.id).length;
+  const shortId = (profile.username.replace(/[@\s]/g, "").toUpperCase() || "USER").slice(0, 6);
+  const autoName = `${profile.name.split(" ")[0]} • ${shortId}-T${teamMatchTeamsCount + 1}`;
 
   const countByRole = (r: Role) =>
     selected.filter((id) => POOL.find((p) => p.id === id)?.role === r).length;
