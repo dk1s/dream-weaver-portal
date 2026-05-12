@@ -44,13 +44,27 @@ Deno.serve(async (req) => {
       });
     }
 
-    const r = await fetch(`${BASE}${endpoint}?${params.toString()}`);
-    const data = await r.json();
-
-    return new Response(JSON.stringify(data), {
-      status: 200,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    const target = `${BASE}${endpoint}?${params.toString()}`;
+    let lastErr: unknown = null;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        const r = await fetch(target, {
+          headers: {
+            "User-Agent": "Mozilla/5.0 (compatible; ApexDraft/1.0)",
+            "Accept": "application/json",
+          },
+        });
+        const data = await r.json();
+        return new Response(JSON.stringify(data), {
+          status: 200,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      } catch (e) {
+        lastErr = e;
+        await new Promise((res) => setTimeout(res, 500 * (attempt + 1)));
+      }
+    }
+    throw lastErr instanceof Error ? lastErr : new Error("Upstream fetch failed");
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Unknown error";
     return new Response(JSON.stringify({ error: msg }), {
